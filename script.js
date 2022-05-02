@@ -141,23 +141,23 @@ function updateDisplay() {
         //Append the row for each book
         arrayTable.appendChild(tr);
         }
-    //Create a bottom row to display totals for book number and totals for books read
+    //Create a bottom row to display totals for book number and pages read
     let totals = document.createElement('tr');
     //Book total cell
     let bookTotal = document.createElement('td');
     bookTotal.textContent = `Total number of books: ${myLibrary.length}`;
     bookTotal.setAttribute('colspan', '2');
     totals.appendChild(bookTotal);
-    //Read books total cell
+    //Pages read total cell
     let readTotal = document.createElement('td');
-    let readCount = 0;
-    //Cycle through array to determine number of books read
+    let pageCount = 0;
+    //Cycle through array to determine number of pages read
     for (let i = 0; i < myLibrary.length; i++) {
         if (myLibrary[i].read == true) {
-            readCount++;
+            pageCount += myLibrary[i].pages;
         }
     }
-    readTotal.textContent = `Total number of books read: ${readCount}`
+    readTotal.textContent = `Total number of pages read: ${pageCount}`
     readTotal.setAttribute('colspan', '2');
     totals.appendChild(readTotal);
     //Append the table
