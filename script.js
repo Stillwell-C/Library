@@ -7,13 +7,9 @@ function Book (title, author, pages, read) {
     this.read = read;
 }
 
+//Add inputs to array
 function addBookToLibrary(title, author, pages, read) {
     let newBook = new Book(title, author, pages, read);
-    myLibrary.push(newBook);
-}
-
-function addBookToLibrary2(title, author, pages, read) {
-    let newBook = new Book (title, author, pages, read);
     myLibrary.push(newBook);
 }
 
@@ -23,25 +19,19 @@ let author = document.getElementById('author-input');
 let pages = document.getElementById('pages-input');
 let read = document.getElementById('read-input');
 
-//Get books from form
-
+//Get books from form to add to array and display if there is user input.
 inputBtn = document.querySelector('#form-input');
-
 inputBtn.addEventListener('click', e => {
     e.preventDefault();
-    let titleValue = title.value;
-    let authorValue = author.value;
-    let pagesValue = pages.value;
-    let readValue = read.checked;
     validateInputs()
-    if ((titleValue != "") && (authorValue != "") && (pagesValue != "")) {
-        addBookToLibrary(titleValue, authorValue, pagesValue, readValue);
+    if ((title.value != "") && (author.value != "") && (pages.value != "")) {
+        addBookToLibrary(title.value, author.value, pages.value, read.value);
         clearValue();
         updateDisplay();
     }
 })
 
-//Clear inputs of user input
+//Clear inputs of user input and any inner text below inputs
 function clearValue() {
     title.value = "";
     author.value = "";
@@ -52,13 +42,14 @@ function clearValue() {
     clearInnerText(pages);
 }
 
+//Helper function for clearValue() for inner text
 function clearInnerText(element){
     let inputControl = element.parentElement;
     let errorDisplay = inputControl.querySelector('.input-error');
     errorDisplay.innerText = "";
 }
 
-//Validate that inputs have values
+//Validate that inputs have values and run function to set necessary inner text
 function validateInputs() {
     let titleValue = title.value.trim();
     let authorValue = author.value.trim();
@@ -80,14 +71,14 @@ function validateInputs() {
         setSuccess(pages);
     }
 }
-
+//Sets error and creates inner text for validateInputs()
 function setError(element, message) {
     let inputControl = element.parentElement;
     let errorDisplay = inputControl.querySelector('.input-error');
     errorDisplay.innerText = message;
     errorDisplay.style.color = "red";
 }
-
+//Sets success and creates inner text for validateInputs()
 function setSuccess(element) {
     let inputControl = element.parentElement;
     let errorDisplay = inputControl.querySelector('.input-error');
@@ -107,28 +98,32 @@ const arrayTable = document.querySelector('#array-table');
 function updateDisplay() {
     //Remove all existing array elements so that they do not repeat.
     removeAllChildNodes(arrayTable);
+    //Loop to cycle through array and add dom elements
     for (let i = 0; i < myLibrary.length; i++) {
         //Create a div for array element and add text content.
         let tr = document.createElement('tr');
         tr.classList.add('arrayRow');
         tr.setAttribute('data-arrayPos', `${i}`);
-        // div.textContent = `${myLibrary[i].title}, ${myLibrary[i].author}, ${myLibrary[i].pages}, ${myLibrary[i].read}`
+        //Create name cell
         let name = document.createElement('td');
         name.classList.add('nameRw');
         name.textContent = myLibrary[i].title;
         tr.appendChild(name);
+        //Create author cell
         let author = document.createElement('td');
         author.classList.add('authorRw');
         author.textContent = myLibrary[i].author;
         tr.appendChild(author);
+        //Create pages cell
         let pages = document.createElement('td');
         pages.classList.add('pagesRw');
         pages.textContent = myLibrary[i].pages;
         tr.appendChild(pages);
         let read = document.createElement('td');
+        //Create read status cell
         read.classList.add('readRw');
         tr.appendChild(read);
-        //Create a status Btn
+        //Create a status Btn inside status cell
         let statusBtn = document.createElement('button');
         statusBtn.classList.add('statusBtn');
         myLibrary[i].read ? statusBtn.textContent = "Read" : statusBtn.textContent = "Not Read";
@@ -143,16 +138,20 @@ function updateDisplay() {
         deleteImg.setAttribute('src', 'img/trash.svg');
         deleteImg.setAttribute('alt', 'Delete button with picture of trash can.');
         deleteCell.appendChild(deleteImg);
-        //Append tr.
+        //Append the row for each book
         arrayTable.appendChild(tr);
         }
+    //Create a bottom row to display totals for book number and totals for books read
     let totals = document.createElement('tr');
+    //Book total cell
     let bookTotal = document.createElement('td');
     bookTotal.textContent = `Total number of books: ${myLibrary.length}`;
     bookTotal.setAttribute('colspan', '2');
     totals.appendChild(bookTotal);
+    //Read books total cell
     let readTotal = document.createElement('td');
     let readCount = 0;
+    //Cycle through array to determine number of books read
     for (let i = 0; i < myLibrary.length; i++) {
         if (myLibrary[i].read == true) {
             readCount++;
@@ -161,16 +160,13 @@ function updateDisplay() {
     readTotal.textContent = `Total number of books read: ${readCount}`
     readTotal.setAttribute('colspan', '2');
     totals.appendChild(readTotal);
+    //Append the table
     arrayTable.appendChild(totals);
 }
 
+//Run update when page is initially loaded
 updateDisplay();
 
-// function removeAllChildNodes(parent) {
-//     while (parent.firstChild) {
-//         parent.removeChild(parent.firstChild);
-//     }
-// }
 
 //Removes all nodes except first header row - I don't know why it needs to be 3 in length?
 function removeAllChildNodes(parent) {
@@ -180,8 +176,7 @@ function removeAllChildNodes(parent) {
 }
 
 
-
-//Deletes button in DOM but figure out how to do so from array
+//Add event listeners and functions to the delete btn and status btn in each row
 arrayTable.addEventListener('click', e =>{
     let arrPos = e.target.parentNode.parentNode.getAttribute('data-arrayPos');
     if (e.target.className == 'deleteImg') {
