@@ -1,10 +1,20 @@
 let myLibrary = [];
 
-function Book (title, author, pages, read) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
+// function Book (title, author, pages, read) {
+//     this.title = title;
+//     this.author = author;
+//     this.pages = pages;
+//     this.read = read;
+// }
+
+//Example of using class instead of above object constructor
+class Book {
+    constructor(title, author, pages, read) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
 }
 
 //Add inputs to array
@@ -25,7 +35,7 @@ inputBtn.addEventListener('click', e => {
     e.preventDefault();
     validateInputs()
     if ((title.value != "") && (author.value != "") && (pages.value != "")) {
-        addBookToLibrary(title.value, author.value, pages.value, read.value);
+        addBookToLibrary(title.value, author.value, pages.value, read.checked);
         clearValue();
         updateDisplay();
     }
@@ -154,7 +164,7 @@ function updateDisplay() {
     //Cycle through array to determine number of pages read
     for (let i = 0; i < myLibrary.length; i++) {
         if (myLibrary[i].read == true) {
-            pageCount += myLibrary[i].pages;
+            pageCount += parseInt(myLibrary[i].pages);
         }
     }
     readTotal.textContent = `Total number of pages read: ${pageCount}`
