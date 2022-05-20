@@ -160,13 +160,8 @@ function updateDisplay() {
     totals.appendChild(bookTotal);
     //Pages read total cell
     let readTotal = document.createElement('td');
-    let pageCount = 0;
     //Cycle through array to determine number of pages read
-    for (let i = 0; i < myLibrary.length; i++) {
-        if (myLibrary[i].read == true) {
-            pageCount += parseInt(myLibrary[i].pages);
-        }
-    }
+    let pageCount = myLibrary.filter(book => book.read == true).reduce((sum, book) => sum + parseInt(book.pages), 0);
     readTotal.textContent = `Total number of pages read: ${pageCount}`
     readTotal.setAttribute('colspan', '2');
     totals.appendChild(readTotal);
