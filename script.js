@@ -34,7 +34,7 @@ inputBtn = document.querySelector('#form-input');
 inputBtn.addEventListener('click', e => {
     e.preventDefault();
     validateInputs()
-    if ((title.value != "") && (author.value != "") && (pages.value != "")) {
+    if (title.validity.valid && author.validity.valid && pages.validity.valid) {
         addBookToLibrary(title.value, author.value, pages.value, read.checked);
         clearValue();
         updateDisplay();
@@ -59,42 +59,107 @@ function clearInnerText(element){
     errorDisplay.innerText = "";
 }
 
-//Validate that inputs have values and run function to set necessary inner text
-function validateInputs() {
-    let titleValue = title.value.trim();
-    let authorValue = author.value.trim();
-    let pagesValue = pages.value.trim();
+title.addEventListener('input', (e) => {
+    validateTitle
+})
 
-    if (titleValue === "") {
-        setError(title, "Input is required");
-    } else {
-        setSuccess(title);
-    }
-    if (authorValue === "") {
-        setError(author, "Input is required");
-    } else {
-        setSuccess(author);
-    }
-    if (pagesValue === "") {
-        setError(pages, "Input is required");
-    } else {
-        setSuccess(pages);
+function validateTitle() {
+    let errorDiv = title.parentElement.querySelector('.input-error')
+    if (title.validity.valid) {
+        errorDiv.textContent = ''
+        errorDiv.classList.remove('active')
+        title.classList.add('success')
+    } else if (title.validity.valueMissing) {
+        title.parentElement.querySelector('.input-error').textContent = 'Please enter the title of the book'
+        title.classList.remove('success')
+    } else if (title.validity.patternMismatch) {
+        title.parentElement.querySelector('.input-error').textContent = 'Not a valid entry'
+        title.classList.remove('success')
     }
 }
-//Sets error and creates inner text for validateInputs()
-function setError(element, message) {
-    let inputControl = element.parentElement;
-    let errorDisplay = inputControl.querySelector('.input-error');
-    errorDisplay.innerText = message;
-    errorDisplay.style.color = "red";
+
+author.addEventListener('input', (e) => {
+    validateAuthor()
+})
+
+function validateAuthor() {
+    let errorDiv = author.parentElement.querySelector('.input-error')
+    if (author.validity.valid) {
+        errorDiv.textContent = ''
+        errorDiv.classList.remove('active')
+        author.classList.add('success')
+    } else if (author.validity.valueMissing) {
+        author.parentElement.querySelector('.input-error').textContent = 'Please enter the author of the book'
+        author.classList.remove('success')
+    } else if (author.validity.patternMismatch) {
+        author.parentElement.querySelector('.input-error').textContent = 'Not a valid entry'
+        author.classList.remove('success')
+    }
 }
-//Sets success and creates inner text for validateInputs()
-function setSuccess(element) {
-    let inputControl = element.parentElement;
-    let errorDisplay = inputControl.querySelector('.input-error');
-    errorDisplay.innerText = "✓";
-    errorDisplay.style.color = "green";
+
+pages.addEventListener('input', (e) => {
+    validatePages()
+})
+
+function validatePages () {
+    let errorDiv = pages.parentElement.querySelector('.input-error')
+    if (pages.validity.valid) {
+        errorDiv.textContent = ''
+        errorDiv.classList.remove('active')
+        pages.classList.add('success')
+    } else if (pages.validity.valueMissing) {
+        pages.parentElement.querySelector('.input-error').textContent = 'Please enter the number of pages'
+        pages.classList.remove('success')
+    } else if (pages.validity.rangeUnderflow) {
+        pages.parentElement.querySelector('.input-error').textContent = 'The book must have at least 1 page'
+        pages.classList.remove('success')
+    }
 }
+
+
+
+function validateInputs() {
+    validateTitle()
+    validateAuthor()
+    validatePages()
+}
+
+//Validate that inputs have values and run function to set necessary inner text
+// function validateInputs() {
+//     let titleValue = title.value.trim();
+//     let authorValue = author.value.trim();
+//     let pagesValue = pages.value.trim();
+
+//     if (titleValue === "") {
+//         setError(title, "Input is required");
+//     } else {
+//         setSuccess(title);
+//     }
+//     if (authorValue === "") {
+//         setError(author, "Input is required");
+//     } else {
+//         setSuccess(author);
+//     }
+//     if (pagesValue === "") {
+//         setError(pages, "Input is required");
+//     } else {
+//         setSuccess(pages);
+//     }
+// }
+// //Sets error and creates inner text for validateInputs()
+// function setError(element, message) {
+//     let inputControl = element.parentElement;
+//     let errorDisplay = inputControl.querySelector('.input-error');
+//     errorDisplay.innerText = message;
+//     errorDisplay.style.color = "red";
+// }
+// //Sets success and creates inner text for validateInputs()
+// function setSuccess(element) {
+//     let inputControl = element.parentElement;
+//     let errorDisplay = inputControl.querySelector('.input-error');
+//     errorDisplay.innerText = "✓";
+//     errorDisplay.style.color = "green";
+// }
 
 
 //Example books
