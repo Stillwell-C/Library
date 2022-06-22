@@ -60,21 +60,23 @@ function clearInnerText(element){
 }
 
 title.addEventListener('input', (e) => {
-    validateTitle
+    validateTitle()
 })
 
 function validateTitle() {
     let errorDiv = title.parentElement.querySelector('.input-error')
     if (title.validity.valid) {
         errorDiv.textContent = ''
-        errorDiv.classList.remove('active')
+        title.classList.remove('failure')
         title.classList.add('success')
     } else if (title.validity.valueMissing) {
         title.parentElement.querySelector('.input-error').textContent = 'Please enter the title of the book'
         title.classList.remove('success')
+        title.classList.add('failure')
     } else if (title.validity.patternMismatch) {
         title.parentElement.querySelector('.input-error').textContent = 'Not a valid entry'
         title.classList.remove('success')
+        title.classList.add('failure')
     }
 }
 
@@ -86,13 +88,15 @@ function validateAuthor() {
     let errorDiv = author.parentElement.querySelector('.input-error')
     if (author.validity.valid) {
         errorDiv.textContent = ''
-        errorDiv.classList.remove('active')
+        author.classList.remove('failure')
         author.classList.add('success')
     } else if (author.validity.valueMissing) {
         author.parentElement.querySelector('.input-error').textContent = 'Please enter the author of the book'
+        author.classList.add('failure')
         author.classList.remove('success')
     } else if (author.validity.patternMismatch) {
         author.parentElement.querySelector('.input-error').textContent = 'Not a valid entry'
+        author.classList.add('failure')
         author.classList.remove('success')
     }
 }
@@ -105,13 +109,15 @@ function validatePages () {
     let errorDiv = pages.parentElement.querySelector('.input-error')
     if (pages.validity.valid) {
         errorDiv.textContent = ''
-        errorDiv.classList.remove('active')
+        pages.classList.remove('failure')
         pages.classList.add('success')
     } else if (pages.validity.valueMissing) {
         pages.parentElement.querySelector('.input-error').textContent = 'Please enter the number of pages'
+        pages.classList.add('failure')
         pages.classList.remove('success')
     } else if (pages.validity.rangeUnderflow) {
         pages.parentElement.querySelector('.input-error').textContent = 'The book must have at least 1 page'
+        pages.classList.add('failure')
         pages.classList.remove('success')
     }
 }
