@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../src/style.css">
+    <title>Library</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Book library</h1>
+        </header>
+        <form id="signup-form" class="signup-form">
+            <label for="signup-email">Email</label>
+            <input type="email" class="signup-email" id="signup-email" name="signup-email">
+            <label for="signup-password">Password</label>
+            <input type="password" class="signup-password" id="signup-password" name="signup-password">
+            <label for="signup-password-confirm">Confirm Password</label>
+            <input type="password" class="signup-password-confirm" id="signup-password-confirm" name="signup-password-confirm">
+        </form>
+        <form id="book-input-form" class="form-container" novalidate>
+            <div class="book-form">
+                <h3>Enter new book:</h3>
+                <div class="inputs">
+                    <div class="input-div title-div">
+                        <label for="title-input">Title:</label>
+                        <input type="text" class="title-input" id="title-input" name="title-input" minlength="1" pattern="^[\w\d]{1,}" required>
+                        <div class="input-error"></div>
+                    </div>
+                    <div class="input-div author-div">
+                        <label for="author-input">Author:</label>
+                        <input type="text" class="author-input" id="author-input" name="author-input" minlength="1" pattern="^[\w\d]{1,}" required>
+                        <div class="input-error"></div>
+                    </div>
+                    <div class="input-div pages-div">
+                        <label for="pages-input">Pages:</label>
+                        <input type="number" class="pages-input" id="pages-input" name="pages-input" min="1" required>
+                        <div class="input-error"></div>
+                    </div>
+                </div>
+                <div class="read-div">
+                    <input type="checkbox" class="read" id="read-input" name="status" value="read">
+                    <label for="read-input">I have read this book.</label>
+                </div>
+                <button id="form-input">Add Book</button>
+            </div>
+        </form>
+        <section class="book-list">
+            <table id="array-table" class="array-table">
+                <tr id="table-header" class="table-header">
+                    <th id="name-clm">Name</th>
+                    <th id="author-clm">Author</th>
+                    <th id="pages-clm">Pages</th>
+                    <th id="status-clm">Status</th>
+                    <th id="btn-clm"> </th>
+                </tr>
+            </table>
+        </section>
+        <footer>
+            <div class="hover-div">
+                <div class="hover-div-about">
+                    <div class="hover-text-div"><span class="hover-text">This is a simple app to add and store information about books. The status of each book made be toggled by clicking on the read/not read button. All information is stored in session storage and will be cleared upon refreshing the page.</span></div>
+                    <h4>About this project.</h4>
+                </div>
+            </div>
+            <h4><a href="https://github.com/Stillwell-C/library">Source</a></h4>
+        </footer>
+    </div>
+
+    <script src="../src/script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
