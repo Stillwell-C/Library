@@ -25673,32 +25673,82 @@ const firebaseConfig = {
 
 const app = (0,firebase_app__WEBPACK_IMPORTED_MODULE_0__.initializeApp)(firebaseConfig);
 const db = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.getFirestore)(app);
-const colRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(db, "books");
+const colRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(db, "myLibrary");
+const queriedBooks = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.query)(colRef, (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.orderBy)("createdAt"));
 
 let myLibrary = [];
 
-// function Book (title, author, pages, read) {
+// getDocs(colRef).then((snapshot) => {
+//   snapshot.docs.forEach((doc) => {
+//     myLibrary.push({ ...doc.data(), id: doc.id });
+//   });
+//   console.log(myLibrary);
+//   updateDisplay();
+// });
+
+//real time collection
+(0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.onSnapshot)(queriedBooks, (snapshot) => {
+  myLibrary = [];
+  snapshot.docs.forEach((doc) => {
+    myLibrary.push({ ...doc.data(), id: doc.id });
+  });
+  console.log(myLibrary);
+  updateDisplay();
+});
+
+// function Book(title, author, pages, read) {
+//   return {
+//     title,
+//     author,
+//     pages,
+//     read,
+//   };
+// }
+
+//Example of using class instead of above object constructor
+// class Book {
+//   constructor(title, author, pages, read) {
 //     this.title = title;
 //     this.author = author;
 //     this.pages = pages;
 //     this.read = read;
+//   }
 // }
 
-//Example of using class instead of above object constructor
-class Book {
-  constructor(title, author, pages, read) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-  }
-}
-
 //Add inputs to array
-function addBookToLibrary(title, author, pages, read) {
-  let newBook = new Book(title, author, pages, read);
-  myLibrary.push(newBook);
-}
+// function addBookToLibrary(title, author, pages, read) {
+//   let newBook = Book(title, author, pages, read);
+//   myLibrary.push(newBook);
+// }
+
+//Add inputs to the database
+const addBookForm = document.getElementById("book-input-form");
+addBookForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.addDoc)(colRef, {
+    title: addBookForm.titleInput.value,
+    author: addBookForm.authorInput.value,
+    pages: addBookForm.pagesInput.value,
+    read: addBookForm.readInput.checked,
+    createdAt: (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.serverTimestamp)(),
+  })
+    .then(() => {
+      addBookForm.reset();
+      // updateDisplay();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+});
+
+const deleteBookFromLibrary = (id) => {
+  const docRef = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.doc)(db, "myLibrary", id);
+  (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.deleteDoc)(docRef)
+    // .then(() => updateDisplay)
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
 
 //All inputs
 let title = document.getElementById("title-input");
@@ -25707,16 +25757,16 @@ let pages = document.getElementById("pages-input");
 let read = document.getElementById("read-input");
 
 //Get books from form to add to array and display if there is user input.
-const inputBtn = document.querySelector("#form-input");
-inputBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  validateInputs();
-  if (title.validity.valid && author.validity.valid && pages.validity.valid) {
-    addBookToLibrary(title.value, author.value, pages.value, read.checked);
-    clearValue();
-    updateDisplay();
-  }
-});
+// const inputBtn = document.querySelector("#form-input");
+// inputBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   validateInputs();
+//   if (title.validity.valid && author.validity.valid && pages.validity.valid) {
+//     addBookToLibrary(title.value, author.value, pages.value, read.checked);
+//     clearValue();
+//     updateDisplay();
+//   }
+// });
 
 //Clear inputs of user input and any inner text below inputs
 function clearValue() {
@@ -25849,9 +25899,9 @@ function validateInputs() {
 // }
 
 //Example books
-addBookToLibrary("Adventures of Huckleberry Finn", "Mark Twain", 188, true);
-addBookToLibrary("Dracula", "Bram Stroker", 418, false);
-addBookToLibrary("Stalingrad", "Anthony Beevor", 494, false);
+// addBookToLibrary("Adventures of Huckleberry Finn", "Mark Twain", 188, true);
+// addBookToLibrary("Dracula", "Bram Stroker", 418, false);
+// addBookToLibrary("Stalingrad", "Anthony Beevor", 494, false);
 
 const arrayTable = document.querySelector("#array-table");
 
@@ -25899,7 +25949,10 @@ function updateDisplay() {
     let deleteImg = document.createElement("img");
     deleteImg.classList.add("deleteImg");
     deleteImg.setAttribute("src", _img_trash_svg__WEBPACK_IMPORTED_MODULE_2__);
-    deleteImg.setAttribute("alt", "Delete button with picture of trash can.");
+    deleteImg.setAttribute("alt", "Delete button.");
+    deleteImg.addEventListener("click", () => {
+      deleteBookFromLibrary(myLibrary[i].id);
+    });
     deleteCell.appendChild(deleteImg);
     //Append the row for each book
     arrayTable.appendChild(tr);

@@ -1,5 +1,16 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  serverTimestamp,
+  query,
+} from "firebase/firestore";
 import trash from "./img/trash.svg";
 import "./style.css";
 
@@ -17,23 +28,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const colRef = collection(db, "myLibrary");
-getDocs(colRef).then((snapshot) => {
+const queriedBooks = query(colRef, orderBy("createdAt"));
+
+let myLibrary = [];
+
+// getDocs(colRef).then((snapshot) => {
+//   snapshot.docs.forEach((doc) => {
+//     myLibrary.push({ ...doc.data(), id: doc.id });
+//   });
+//   console.log(myLibrary);
+//   updateDisplay();
+// });
+
+//real time collection
+onSnapshot(queriedBooks, (snapshot) => {
+  myLibrary = [];
   snapshot.docs.forEach((doc) => {
     myLibrary.push({ ...doc.data(), id: doc.id });
   });
   console.log(myLibrary);
+  updateDisplay();
 });
 
-let myLibrary = [];
-
-function Book(title, author, pages, read) {
-  return {
-    title,
-    author,
-    pages,
-    read,
-  };
-}
+// function Book(title, author, pages, read) {
+//   return {
+//     title,
+//     author,
+//     pages,
+//     read,
+//   };
+// }
 
 //Example of using class instead of above object constructor
 // class Book {
@@ -46,10 +70,39 @@ function Book(title, author, pages, read) {
 // }
 
 //Add inputs to array
-function addBookToLibrary(title, author, pages, read) {
-  let newBook = Book(title, author, pages, read);
-  myLibrary.push(newBook);
-}
+// function addBookToLibrary(title, author, pages, read) {
+//   let newBook = Book(title, author, pages, read);
+//   myLibrary.push(newBook);
+// }
+
+//Add inputs to the database
+const addBookForm = document.getElementById("book-input-form");
+addBookForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addDoc(colRef, {
+    title: addBookForm.titleInput.value,
+    author: addBookForm.authorInput.value,
+    pages: addBookForm.pagesInput.value,
+    read: addBookForm.readInput.checked,
+    createdAt: serverTimestamp(),
+  })
+    .then(() => {
+      addBookForm.reset();
+      // updateDisplay();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+});
+
+const deleteBookFromLibrary = (id) => {
+  const docRef = doc(db, "myLibrary", id);
+  deleteDoc(docRef)
+    // .then(() => updateDisplay)
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
 
 //All inputs
 let title = document.getElementById("title-input");
@@ -58,16 +111,16 @@ let pages = document.getElementById("pages-input");
 let read = document.getElementById("read-input");
 
 //Get books from form to add to array and display if there is user input.
-const inputBtn = document.querySelector("#form-input");
-inputBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  validateInputs();
-  if (title.validity.valid && author.validity.valid && pages.validity.valid) {
-    addBookToLibrary(title.value, author.value, pages.value, read.checked);
-    clearValue();
-    updateDisplay();
-  }
-});
+// const inputBtn = document.querySelector("#form-input");
+// inputBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   validateInputs();
+//   if (title.validity.valid && author.validity.valid && pages.validity.valid) {
+//     addBookToLibrary(title.value, author.value, pages.value, read.checked);
+//     clearValue();
+//     updateDisplay();
+//   }
+// });
 
 //Clear inputs of user input and any inner text below inputs
 function clearValue() {
@@ -200,9 +253,9 @@ function validateInputs() {
 // }
 
 //Example books
-addBookToLibrary("Adventures of Huckleberry Finn", "Mark Twain", 188, true);
-addBookToLibrary("Dracula", "Bram Stroker", 418, false);
-addBookToLibrary("Stalingrad", "Anthony Beevor", 494, false);
+// addBookToLibrary("Adventures of Huckleberry Finn", "Mark Twain", 188, true);
+// addBookToLibrary("Dracula", "Bram Stroker", 418, false);
+// addBookToLibrary("Stalingrad", "Anthony Beevor", 494, false);
 
 const arrayTable = document.querySelector("#array-table");
 
@@ -250,7 +303,10 @@ function updateDisplay() {
     let deleteImg = document.createElement("img");
     deleteImg.classList.add("deleteImg");
     deleteImg.setAttribute("src", trash);
-    deleteImg.setAttribute("alt", "Delete button with picture of trash can.");
+    deleteImg.setAttribute("alt", "Delete button.");
+    deleteImg.addEventListener("click", () => {
+      deleteBookFromLibrary(myLibrary[i].id);
+    });
     deleteCell.appendChild(deleteImg);
     //Append the row for each book
     arrayTable.appendChild(tr);
