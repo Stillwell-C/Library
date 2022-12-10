@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import css from "./src/style.css";
+import { getFirestore, collection } from "firebase/firestore";
+import trash from "./img/trash.svg";
+import "./style.css";
 
 // Your web app's Firebase configuration
 
@@ -15,6 +16,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const colRef = collection(db, "books");
 
 let myLibrary = [];
 
@@ -48,7 +50,7 @@ let pages = document.getElementById("pages-input");
 let read = document.getElementById("read-input");
 
 //Get books from form to add to array and display if there is user input.
-inputBtn = document.querySelector("#form-input");
+const inputBtn = document.querySelector("#form-input");
 inputBtn.addEventListener("click", (e) => {
   e.preventDefault();
   validateInputs();
@@ -239,7 +241,7 @@ function updateDisplay() {
     //Add delete button image
     let deleteImg = document.createElement("img");
     deleteImg.classList.add("deleteImg");
-    deleteImg.setAttribute("src", "img/trash.svg");
+    deleteImg.setAttribute("src", trash);
     deleteImg.setAttribute("alt", "Delete button with picture of trash can.");
     deleteCell.appendChild(deleteImg);
     //Append the row for each book
