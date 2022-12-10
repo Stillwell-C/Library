@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import trash from "./img/trash.svg";
 import "./style.css";
 
@@ -16,30 +16,38 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const colRef = collection(db, "books");
+const colRef = collection(db, "myLibrary");
+getDocs(colRef).then((snapshot) => {
+  snapshot.docs.forEach((doc) => {
+    myLibrary.push({ ...doc.data(), id: doc.id });
+  });
+  console.log(myLibrary);
+});
 
 let myLibrary = [];
 
-// function Book (title, author, pages, read) {
+function Book(title, author, pages, read) {
+  return {
+    title,
+    author,
+    pages,
+    read,
+  };
+}
+
+//Example of using class instead of above object constructor
+// class Book {
+//   constructor(title, author, pages, read) {
 //     this.title = title;
 //     this.author = author;
 //     this.pages = pages;
 //     this.read = read;
+//   }
 // }
-
-//Example of using class instead of above object constructor
-class Book {
-  constructor(title, author, pages, read) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-  }
-}
 
 //Add inputs to array
 function addBookToLibrary(title, author, pages, read) {
-  let newBook = new Book(title, author, pages, read);
+  let newBook = Book(title, author, pages, read);
   myLibrary.push(newBook);
 }
 
