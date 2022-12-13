@@ -33,6 +33,29 @@ header {
     justify-content: center;
 }
 
+button {
+    cursor: pointer;
+}
+
+.user-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: .5rem;
+    gap: .5rem
+}
+
+.user-navigation {
+    color: #333;
+}
+
+.log-out-button {
+    padding: 3px 5px;
+    border: 1px solid black;
+    border-radius: .25rem;
+    background-color: white;
+}
+
 .book-list {
     display: flex;
     justify-content: center;
@@ -63,6 +86,9 @@ header {
 .inputs input {
     display: block;
     flex: 1;
+}
+
+input {
     padding: 5px;
     border-radius: 7px;
     border: 1px solid #807f7f;
@@ -108,8 +134,7 @@ input.failure {
 }
 
 .table-header {
-   
-    text-align: left;
+    text-align: center;
     font-weight: Bold;
 }
 
@@ -117,18 +142,24 @@ input.failure {
     text-align: center;
 }
 
-.array-table th,
-.array-table td {
+
+.array-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #dddddd;
     padding: 12px 20px;
 }
 
-.array-table tr {
-    border-bottom: 1px solid #dddddd;
+.cell {
+    flex: 1;
+    text-align: center;
 }
 
 .deleteImg {
     width: 2.5rem;
     padding: .5rem;
+    cursor: pointer;
 }
 
 .deleteImg:hover {
@@ -139,18 +170,18 @@ input.failure {
     min-width: 130px;
 }
 
-#form-input {
+.input-button {
     background-color: #0398dc;
     color: #fff;
     border: none;
 }
 
-#form-input:hover {
+.input-button:hover {
     background-color: #1DB2F6;
 }
 
 .statusBtn,
-#form-input {
+.input-button {
     padding: 10px 15px;
     border-radius: 5px;
     display: block;
@@ -165,7 +196,7 @@ input.failure {
 
 .statusBtn:hover {
     color: #fff;
-    border: none;
+    border: 1px solid #0398dc;
     background-color: #0398dc;
 }
 
@@ -206,6 +237,88 @@ footer {
     visibility: visible;
     opacity: 1;
 }
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    border: 1px solid black;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: #fff;
+    width: 500px;
+    max-width: 80%;
+}
+
+.modal.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+ }
+
+ .modal-body {
+    padding: 10px 15px;
+ }
+
+ .modal-body > form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+ }
+
+ .modal-input-div {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+ }
+
+ .signup-modal-login-button,
+ .login-modal-sign-button {
+    text-decoration: underline;
+    cursor: pointer;
+ }
+
+ .signup-modal-error, 
+ .login-modal-error {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+ }
+
+ .modal-button-div {
+    padding-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+ }
+
+ 
+
+ #overlay{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+ }
+
+ #overlay.active {
+    pointer-events: all;
+    opacity: 1;
+ }
 
 @media(max-width: 768px) {
     .inputs {
