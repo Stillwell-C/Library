@@ -13,13 +13,22 @@
             <h1>Book library</h1>
         </header>
         <form id="signup-form" class="signup-form">
-            <label for="signup-email">Email</label>
-            <input type="email" class="signup-email" id="signup-email" name="signup-email">
+            <label for="signupEmail">Email</label>
+            <input type="email" class="signupEmail" id="signupEmail" name="signupEmail">
             <label for="signup-password">Password</label>
-            <input type="password" class="signup-password" id="signup-password" name="signup-password">
-            <label for="signup-password-confirm">Confirm Password</label>
-            <input type="password" class="signup-password-confirm" id="signup-password-confirm" name="signup-password-confirm">
+            <input type="password" class="signupPassword" id="signupPassword" name="signupPassword">
+            <label for="signupPassword-confirm">Confirm Password</label>
+            <input type="password" class="signupPasswordConfirm" id="signupPasswordConfirm" name="signupPasswordConfirm">
+            <button type="submit" id="sign-up-button">Sign up</button>
         </form>
+        <form id="login-form" class="login-form">
+            <label for="loginEmail">Email</label>
+            <input type="email" class="loginEmail" id="loginEmail" name="loginEmail">
+            <label for="loginPassword">Password</label>
+            <input type="password" class="loginPassword" id="loginPassword" name="loginPassword">
+            <button type="submit" id="log-in-button">Log In</button>
+        </form>
+        <button id="log-out-button">Log out</button>
         <form id="book-input-form" class="form-container" novalidate>
             <div class="book-form">
                 <h3>Enter new book:</h3>

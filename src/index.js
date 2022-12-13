@@ -10,12 +10,19 @@ import {
   orderBy,
   serverTimestamp,
   query,
+  updateDoc,
 } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 import trash from "./img/trash.svg";
 import "./style.css";
 
 // Your web app's Firebase configuration
-
 const firebaseConfig = {
   apiKey: "AIzaSyBFMZx4SAtCBPoWLy5o_HPpO7vJ8Eyj-b0",
   authDomain: "library-88935.firebaseapp.com",
@@ -27,122 +34,105 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const colRef = collection(db, "myLibrary");
-const queriedBooks = query(colRef, orderBy("createdAt"));
+const auth = getAuth();
 
-let myLibrary = [];
+//user login or signup
+onAuthStateChanged(auth, (user) => {
+  console.log("user status changed", user);
 
-// getDocs(colRef).then((snapshot) => {
-//   snapshot.docs.forEach((doc) => {
-//     myLibrary.push({ ...doc.data(), id: doc.id });
-//   });
-//   console.log(myLibrary);
-//   updateDisplay();
-// });
+  const overlay = document.querySelector("#overlay");
 
-//real time collection
-onSnapshot(queriedBooks, (snapshot) => {
-  myLibrary = [];
-  snapshot.docs.forEach((doc) => {
-    myLibrary.push({ ...doc.data(), id: doc.id });
-  });
-  console.log(myLibrary);
-  updateDisplay();
+  if (!user) {
+    signupModal.classList.add("active");
+    overlay.classList.add("active");
+  } else {
+    signupModal.classList.remove("active");
+    loginModal.classList.remove("active");
+    overlay.classList.remove("active");
+  }
 });
 
-// function Book(title, author, pages, read) {
-//   return {
-//     title,
-//     author,
-//     pages,
-//     read,
-//   };
-// }
+//real time collection
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const userNameDisplay = document.querySelector(".user-name-display");
+    userNameDisplay.textContent = user.email;
+    console.log(user);
+    const colRef = collection(db, user.uid);
+    const queriedBooks = query(colRef, orderBy("createdAt"));
+    onSnapshot(queriedBooks, (snapshot) => {
+      myLibrary = [];
+      snapshot.docs.forEach((doc) => {
+        //TODO just make this call update
+        myLibrary.push({ ...doc.data(), id: doc.id });
+      });
+      console.log(myLibrary);
+      updateDisplay();
+    });
+  } else {
+    console.log("Sign in to see collection");
+  }
+});
 
-//Example of using class instead of above object constructor
-// class Book {
-//   constructor(title, author, pages, read) {
-//     this.title = title;
-//     this.author = author;
-//     this.pages = pages;
-//     this.read = read;
-//   }
-// }
+//Delete books
+const deleteBookFromLibrary = (id) => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const docRef = doc(db, user.uid, id);
+      deleteDoc(docRef).catch((err) => {
+        console.log(err.message);
+      });
+    } else {
+      console.log("Please sign in to delete books from library");
+    }
+  });
+};
 
-//Add inputs to array
-// function addBookToLibrary(title, author, pages, read) {
-//   let newBook = Book(title, author, pages, read);
-//   myLibrary.push(newBook);
-// }
+//Edit book status
+const editBookStatus = (id, currentStatus) => {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const docRef = doc(db, user.uid, id);
+      updateDoc(docRef, {
+        read: !currentStatus,
+      });
+    } else {
+      console.log("Please log in to edit book");
+    }
+  });
+};
+
+let myLibrary = [];
 
 //Add inputs to the database
 const addBookForm = document.getElementById("book-input-form");
 addBookForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  addDoc(colRef, {
-    title: addBookForm.titleInput.value,
-    author: addBookForm.authorInput.value,
-    pages: addBookForm.pagesInput.value,
-    read: addBookForm.readInput.checked,
-    createdAt: serverTimestamp(),
-  })
-    .then(() => {
-      addBookForm.reset();
-      // updateDisplay();
-    })
-    .catch((err) => {
-      console.log(err.message);
+  validateInputs();
+  if (title.validity.valid && author.validity.valid && pages.validity.valid) {
+    onAuthStateChanged(auth, (user) => {
+      const colRef = collection(db, user.uid);
+      addDoc(colRef, {
+        title: addBookForm.titleInput.value,
+        author: addBookForm.authorInput.value,
+        pages: addBookForm.pagesInput.value,
+        read: addBookForm.readInput.checked,
+        createdAt: serverTimestamp(),
+      })
+        .then(() => {
+          addBookForm.reset();
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     });
+  }
 });
-
-const deleteBookFromLibrary = (id) => {
-  const docRef = doc(db, "myLibrary", id);
-  deleteDoc(docRef)
-    // .then(() => updateDisplay)
-    .catch((err) => {
-      console.log(err.message);
-    });
-};
 
 //All inputs
 let title = document.getElementById("title-input");
 let author = document.getElementById("author-input");
 let pages = document.getElementById("pages-input");
-let read = document.getElementById("read-input");
-
-//Get books from form to add to array and display if there is user input.
-// const inputBtn = document.querySelector("#form-input");
-// inputBtn.addEventListener("click", (e) => {
-//   e.preventDefault();
-//   validateInputs();
-//   if (title.validity.valid && author.validity.valid && pages.validity.valid) {
-//     addBookToLibrary(title.value, author.value, pages.value, read.checked);
-//     clearValue();
-//     updateDisplay();
-//   }
-// });
-
-//Clear inputs of user input and any inner text below inputs
-function clearValue() {
-  title.value = "";
-  author.value = "";
-  pages.value = "";
-  read.checked = false;
-  clearInnerText(title);
-  clearInnerText(author);
-  clearInnerText(pages);
-}
-
-//Helper function for clearValue() for inner text
-function clearInnerText(element) {
-  let inputControl = element.parentElement;
-  let errorDisplay = inputControl.querySelector(".input-error");
-  errorDisplay.innerText = "";
-}
-
-title.addEventListener("input", (e) => {
-  validateTitle();
-});
 
 function validateTitle() {
   let errorDiv = title.parentElement.querySelector(".input-error");
@@ -163,10 +153,6 @@ function validateTitle() {
   }
 }
 
-author.addEventListener("input", (e) => {
-  validateAuthor();
-});
-
 function validateAuthor() {
   let errorDiv = author.parentElement.querySelector(".input-error");
   if (author.validity.valid) {
@@ -185,10 +171,6 @@ function validateAuthor() {
     author.classList.remove("success");
   }
 }
-
-pages.addEventListener("input", (e) => {
-  validatePages();
-});
 
 function validatePages() {
   let errorDiv = pages.parentElement.querySelector(".input-error");
@@ -213,49 +195,8 @@ function validateInputs() {
   validateTitle();
   validateAuthor();
   validatePages();
+  console.log("function run");
 }
-
-//Validate that inputs have values and run function to set necessary inner text
-// function validateInputs() {
-//     let titleValue = title.value.trim();
-//     let authorValue = author.value.trim();
-//     let pagesValue = pages.value.trim();
-
-//     if (titleValue === "") {
-//         setError(title, "Input is required");
-//     } else {
-//         setSuccess(title);
-//     }
-//     if (authorValue === "") {
-//         setError(author, "Input is required");
-//     } else {
-//         setSuccess(author);
-//     }
-//     if (pagesValue === "") {
-//         setError(pages, "Input is required");
-//     } else {
-//         setSuccess(pages);
-//     }
-// }
-// //Sets error and creates inner text for validateInputs()
-// function setError(element, message) {
-//     let inputControl = element.parentElement;
-//     let errorDisplay = inputControl.querySelector('.input-error');
-//     errorDisplay.innerText = message;
-//     errorDisplay.style.color = "red";
-// }
-// //Sets success and creates inner text for validateInputs()
-// function setSuccess(element) {
-//     let inputControl = element.parentElement;
-//     let errorDisplay = inputControl.querySelector('.input-error');
-//     errorDisplay.innerText = "✓";
-//     errorDisplay.style.color = "green";
-// }
-
-//Example books
-// addBookToLibrary("Adventures of Huckleberry Finn", "Mark Twain", 188, true);
-// addBookToLibrary("Dracula", "Bram Stroker", 418, false);
-// addBookToLibrary("Stalingrad", "Anthony Beevor", 494, false);
 
 const arrayTable = document.querySelector("#array-table");
 
@@ -266,27 +207,35 @@ function updateDisplay() {
   //Loop to cycle through array and add dom elements
   for (let i = 0; i < myLibrary.length; i++) {
     //Create a div for array element and add text content.
-    let tr = document.createElement("tr");
-    tr.classList.add("arrayRow");
-    tr.setAttribute("data-arrayPos", `${i}`);
+    let tr = document.createElement("div");
+    tr.classList.add("array-row");
+    tr.setAttribute("role", "rowgroup");
     //Create name cell
-    let name = document.createElement("td");
+    let name = document.createElement("div");
     name.classList.add("nameRw");
+    name.classList.add("cell");
     name.textContent = myLibrary[i].title;
+    name.setAttribute("role", "cell");
     tr.appendChild(name);
     //Create author cell
-    let author = document.createElement("td");
+    let author = document.createElement("div");
     author.classList.add("authorRw");
+    author.classList.add("cell");
     author.textContent = myLibrary[i].author;
+    author.setAttribute("role", "cell");
     tr.appendChild(author);
     //Create pages cell
-    let pages = document.createElement("td");
+    let pages = document.createElement("div");
     pages.classList.add("pagesRw");
+    pages.classList.add("cell");
     pages.textContent = myLibrary[i].pages;
+    pages.setAttribute("role", "cell");
     tr.appendChild(pages);
-    let read = document.createElement("td");
+    let read = document.createElement("div");
     //Create read status cell
     read.classList.add("readRw");
+    read.classList.add("cell");
+    read.setAttribute("role", "cell");
     tr.appendChild(read);
     //Create a status Btn inside status cell
     let statusBtn = document.createElement("button");
@@ -294,10 +243,15 @@ function updateDisplay() {
     myLibrary[i].read
       ? (statusBtn.textContent = "Read")
       : (statusBtn.textContent = "Not Read");
+    statusBtn.addEventListener("click", () => {
+      editBookStatus(myLibrary[i].id, myLibrary[i].read);
+    });
     read.appendChild(statusBtn);
     //Create cell for delete btn
-    let deleteCell = document.createElement("td");
+    let deleteCell = document.createElement("div");
     deleteCell.classList.add("deleteRw");
+    deleteCell.classList.add("cell");
+    deleteCell.setAttribute("role", "cell");
     tr.appendChild(deleteCell);
     //Add delete button image
     let deleteImg = document.createElement("img");
@@ -312,20 +266,25 @@ function updateDisplay() {
     arrayTable.appendChild(tr);
   }
   //Create a bottom row to display totals for book number and pages read
-  let totals = document.createElement("tr");
+  let totals = document.createElement("div");
+  totals.classList.add("table-footer");
+  totals.classList.add("array-row");
+  totals.setAttribute("role", "rowgroup");
   //Book total cell
-  let bookTotal = document.createElement("td");
+  let bookTotal = document.createElement("div");
   bookTotal.textContent = `Total number of books: ${myLibrary.length}`;
-  bookTotal.setAttribute("colspan", "2");
+  bookTotal.classList.add("cell");
+  bookTotal.setAttribute("role", "cell");
   totals.appendChild(bookTotal);
   //Pages read total cell
-  let readTotal = document.createElement("td");
+  let readTotal = document.createElement("div");
   //Cycle through array to determine number of pages read
   let pageCount = myLibrary
     .filter((book) => book.read == true)
     .reduce((sum, book) => sum + parseInt(book.pages), 0);
   readTotal.textContent = `Total number of pages read: ${pageCount}`;
-  readTotal.setAttribute("colspan", "2");
+  readTotal.setAttribute("role", "cell");
+  readTotal.classList.add("cell");
   totals.appendChild(readTotal);
   //Append the table
   arrayTable.appendChild(totals);
@@ -341,16 +300,66 @@ function removeAllChildNodes(parent) {
   }
 }
 
-//Add event listeners and functions to the delete btn and status btn in each row
-arrayTable.addEventListener("click", (e) => {
-  let arrPos = e.target.parentNode.parentNode.getAttribute("data-arrayPos");
-  if (e.target.className == "deleteImg") {
-    myLibrary.splice(arrPos, 1);
-    updateDisplay();
-  } else if (e.target.className == "statusBtn") {
-    myLibrary[arrPos].read
-      ? (myLibrary[arrPos].read = false)
-      : (myLibrary[arrPos].read = true);
-    updateDisplay();
+//sign up new users
+const signupForm = document.querySelector(".signup-form");
+signupForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = signupForm.signupEmail.value;
+  const password = signupForm.signupPassword.value;
+  const passwordCheck = signupForm.signupPasswordConfirm.value;
+  const errorDiv = document.querySelector(".signup-modal-error");
+  if (password === passwordCheck) {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((cred) => {
+        errorDiv.textContent = "";
+        console.log("user created:", cred.user);
+        signupForm.reset();
+      })
+      .catch((err) => (errorDiv.textContent = err.message));
+  } else {
+    errorDiv.textContent = "Your passwords do not match";
   }
+});
+
+//Event listeners to toggle between login and sign up modals
+const signupModal = document.querySelector("#signup-modal");
+const loginModal = document.querySelector("#login-modal");
+const loginFormLink = document.querySelector(".signup-modal-login-button");
+loginFormLink.addEventListener("click", () => {
+  signupModal.classList.remove("active");
+  loginModal.classList.add("active");
+});
+const signupFormLink = document.querySelector(".login-modal-sign-button");
+signupFormLink.addEventListener("click", () => {
+  signupModal.classList.add("active");
+  loginModal.classList.remove("active");
+});
+
+//log in users
+const loginForm = document.querySelector(".login-form");
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = loginForm.loginEmail.value;
+  const password = loginForm.loginPassword.value;
+  const errorDiv = document.querySelector(".login-modal-error");
+  signInWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+      errorDiv.textContent = "";
+      console.log("user login complete", cred);
+    })
+    .catch((err) => (errorDiv.textContent = err.message));
+});
+
+//log out users
+const logoutButton = document.querySelector("#log-out-button");
+logoutButton.addEventListener("click", () => {
+  signOut(auth)
+    .then(() => {
+      myLibrary = [];
+      updateDisplay();
+      console.log("user signed out");
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 });
