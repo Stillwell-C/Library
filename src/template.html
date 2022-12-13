@@ -1,79 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <link rel="stylesheet" href="../src/style.css"> -->
     <title>Library</title>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Book library</h1>
-        </header>
-        <form id="signup-form" class="signup-form">
-            <label for="signup-email">Email</label>
-            <input type="email" class="signup-email" id="signup-email" name="signup-email">
-            <label for="signup-password">Password</label>
-            <input type="password" class="signup-password" id="signup-password" name="signup-password">
-            <label for="signup-password-confirm">Confirm Password</label>
-            <input type="password" class="signup-password-confirm" id="signup-password-confirm" name="signup-password-confirm">
-        </form>
-        <form id="book-input-form" class="form-container" novalidate>
-            <div class="book-form">
-                <h3>Enter new book:</h3>
-                <div class="inputs">
-                    <div class="input-div title-div">
-                        <label for="title-input">Title:</label>
-                        <input type="text" class="title-input" id="title-input" name="titleInput" minlength="1" pattern="^[\w\d]{1,}" required>
-                        <div class="input-error"></div>
-                    </div>
-                    <div class="input-div author-div">
-                        <label for="author-input">Author:</label>
-                        <input type="text" class="author-input" id="author-input" name="authorInput" minlength="1" pattern="^[\w\d]{1,}" required>
-                        <div class="input-error"></div>
-                    </div>
-                    <div class="input-div pages-div">
-                        <label for="pages-input">Pages:</label>
-                        <input type="number" class="pages-input" id="pages-input" name="pagesInput" min="1" required>
-                        <div class="input-error"></div>
-                    </div>
-                </div>
-                <div class="read-div">
-                    <input type="checkbox" class="read" id="read-input" name="readInput" value="read">
-                    <label for="read-input">I have read this book.</label>
-                </div>
-                <button id="form-input">Add Book</button>
+      <nav class="user-navigation">
+        <div class="user-name-display"></div>
+        <button id="log-out-button" class="log-out-button">Log out</button>
+      </nav>
+      <header>
+        <h1>Book library</h1>
+      </header>
+
+      <form id="book-input-form" class="form-container" novalidate>
+        <div class="book-form">
+          <h3>Enter new book:</h3>
+          <div class="inputs">
+            <div class="input-div title-div">
+              <label for="title-input">Title:</label>
+              <input
+                type="text"
+                class="title-input"
+                id="title-input"
+                name="titleInput"
+                minlength="1"
+                pattern="^[\w\d]{1,}"
+                required
+              />
+              <div class="input-error"></div>
             </div>
-        </form>
-        <section class="book-list">
-            <table id="array-table" class="array-table">
-                <tr id="table-header" class="table-header">
-                    <th id="name-clm">Name</th>
-                    <th id="author-clm">Author</th>
-                    <th id="pages-clm">Pages</th>
-                    <th id="status-clm">Status</th>
-                    <th id="btn-clm"> </th>
-                </tr>
-            </table>
-        </section>
-        <footer>
-            <div class="hover-div">
+            <div class="input-div author-div">
+              <label for="author-input">Author:</label>
+              <input
+                type="text"
+                class="author-input"
+                id="author-input"
+                name="authorInput"
+                minlength="1"
+                pattern="^[\w\d]{1,}"
+                required
+              />
+              <div class="input-error"></div>
+            </div>
+            <div class="input-div pages-div">
+              <label for="pages-input">Pages:</label>
+              <input
+                type="number"
+                class="pages-input"
+                id="pages-input"
+                name="pagesInput"
+                min="1"
+                required
+              />
+              <div class="input-error"></div>
+            </div>
+          </div>
+          <div class="read-div">
+            <input
+              type="checkbox"
+              class="read"
+              id="read-input"
+              name="readInput"
+              value="read"
+            />
+            <label for="read-input">I have read this book.</label>
+          </div>
+          <button class="input-button" id="form-input" type="submit">
+            Add Book
+          </button>
+        </div>
+      </form>
+      <section class="book-list">
+        <div
+          id="array-table"
+          class="array-table"
+          role="table"
+          aria-label="Book list table"
+        >
+          <div
+            id="table-header"
+            class="table-header array-row header"
+            role="rowgroup"
+          >
+            <div id="name-clm" class="cell" role="columnheader">Name</div>
+            <div id="author-clm" class="cell" role="columnheader">Author</div>
+            <div id="pages-clm" class="cell" role="columnheader">Pages</div>
+            <div id="status-clm" class="cell" role="columnheader">Status</div>
+            <div id="btn-clm" class="cell" roll="columnheader"></div>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <!-- <div class="hover-div">
                 <div class="hover-div-about">
                     <div class="hover-text-div"><span class="hover-text">This is a simple app to add and store information about books. The status of each book made be toggled by clicking on the read/not read button. All information is stored in session storage and will be cleared upon refreshing the page.</span></div>
                     <h4>About this project.</h4>
                 </div>
+            </div> -->
+        <h4><a href="https://github.com/Stillwell-C/library">Source</a></h4>
+      </footer>
+
+      <div class="modal signup-modal" id="signup-modal">
+        <div class="modal-header">Sign up</div>
+        <div class="modal-body">
+          <div class="signup-modal-error"></div>
+          <form id="signup-form" class="signup-form">
+            <div class="modal-input-div">
+              <label for="signupEmail">Email</label>
+              <input
+                type="email"
+                class="signupEmail"
+                id="signupEmail"
+                name="signupEmail"
+              />
             </div>
-            <h4><a href="https://github.com/Stillwell-C/library">Source</a></h4>
-        </footer>
+            <div class="modal-input-div">
+              <label for="signup-password">Password</label>
+              <input
+                type="password"
+                class="signupPassword"
+                id="signupPassword"
+                name="signupPassword"
+              />
+            </div>
+            <div class="modal-input-div">
+              <label for="signupPassword-confirm">Confirm Password</label>
+              <input
+                type="password"
+                class="signupPasswordConfirm"
+                id="signupPasswordConfirm"
+                name="signupPasswordConfirm"
+              />
+            </div>
+            <div class="modal-button-div">
+              <button type="submit" class="input-button" id="sign-up-button">
+                Sign up
+              </button>
+              <p>
+                Already have an account?
+                <span class="signup-modal-login-button">Login here</span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal login-modal" id="login-modal">
+        <div class="modal-header">Login</div>
+        <div class="modal-body">
+          <div class="login-modal-error"></div>
+          <form id="login-form" class="login-form">
+            <div class="modal-input-div">
+              <label for="loginEmail">Email</label>
+              <input
+                type="email"
+                class="loginEmail"
+                id="loginEmail"
+                name="loginEmail"
+              />
+            </div>
+            <div class="modal-input-div">
+              <label for="loginPassword">Password</label>
+              <input
+                type="password"
+                class="loginPassword"
+                id="loginPassword"
+                name="loginPassword"
+              />
+            </div>
+            <div class="modal-button-div">
+              <button class="input-button" type="submit" id="log-in-button">
+                Log In
+              </button>
+              <p>
+                Don't have an account?
+                <span class="login-modal-sign-button">Sign up here</span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="overlay"></div>
     </div>
-
-</body>
+  </body>
 </html>
-
-
-
-
-
-
